@@ -131,6 +131,7 @@ void LPCSpeechSynthWordBank::Reset() {
       &word_boundaries_[kLPCSpeechSynthMaxWords], 0);
 }
 
+PLAITS_COLD_CODE
 size_t LPCSpeechSynthWordBank::LoadNextWord(const uint8_t* data) {
   BitStream bitstream;
   bitstream.Init(data);
@@ -180,6 +181,7 @@ size_t LPCSpeechSynthWordBank::LoadNextWord(const uint8_t* data) {
   return bitstream.ptr() - data;
 }
 
+PLAITS_COLD_CODE
 bool LPCSpeechSynthWordBank::Load(int bank) {
   if (bank == loaded_bank_ || bank >= num_banks_) {
     return false;

@@ -33,13 +33,18 @@
 
 namespace plaits {
 
-#define LPC_SPEECH_SYNTH_NUM_WORD_BANKS 5
+// Trimmed for flash: of the five original TI ROM banks, only the two with the
+// best words-per-byte ratio are kept -- bank_1 (numbers, 82 B/word) and bank_2
+// (the alphabet, 60 B/word). The three removed banks were bank_0 (colours,
+// 1233 B / 7 words), bank_3 (NATO alphabet, 2524 B / 26 words) and bank_4
+// (modular-synth vocabulary, 4802 B / 22 words -- 218 B per word, the most
+// expensive of the five). Restoring any of them means re-adding its array here
+// and to word_banks_; kLPCSpeechSynthMaxFrames (1024) is left alone so it still
+// covers every original bank, the largest being bank_4 at 926 frames.
+#define LPC_SPEECH_SYNTH_NUM_WORD_BANKS 2
 
-extern const uint8_t bank_0[1233];
 extern const uint8_t bank_1[900];
 extern const uint8_t bank_2[1552];
-extern const uint8_t bank_3[2524];
-extern const uint8_t bank_4[4802];
 
 extern const LPCSpeechSynthWordBankData word_banks_[LPC_SPEECH_SYNTH_NUM_WORD_BANKS];
 

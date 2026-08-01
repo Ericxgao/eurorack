@@ -35,6 +35,25 @@
 
 namespace plaits {
 
+// Optimize for size, not speed, in code that never runs per sample. The word
+// bank unpacker only executes on an actual bank change (Load() early-returns
+// when the bank is already resident) and PlayFrame runs at
+// kLPCSpeechSynthFPS (40 Hz), so the build's -funroll-loops and -O2 inlining
+// buy nothing there while costing a lot of flash: measured with
+// arm-none-eabi-g++ 10.2.1 at the project's flags, LoadNextWord alone drops
+// from 1504 to 360 bytes and PlayFrame from 732 to 636, while the per-sample
+// Render functions come out byte-identical.
+//
+// Only GCC has this attribute. Clang parses it and then errors under the SDK's
+// -Werror (-Wunknown-attributes), and emcc is clang — so it must expand to
+// nothing there. That costs nothing: those are host/WASM audition builds, where
+// flash size is not a constraint.
+#if defined(__GNUC__) && !defined(__clang__)
+#define PLAITS_COLD_CODE __attribute__((optimize("Os")))
+#else
+#define PLAITS_COLD_CODE
+#endif
+
 const int kLPCOrder = 10;
 
 const float kLPCSpeechSynthDefaultF0 = 100.0f;

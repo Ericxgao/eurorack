@@ -24,14 +24,21 @@
 //
 // -----------------------------------------------------------------------------
 //
-// Various flavours of speech synthesis.
+// LPC10 speech synthesis.
 //
-// OUT: the selected voice model (naive/SAM/LPC), mixed with the secondary
-// formant path by MACRO (voice amount / spectral sharpening). AUX: the
-// secondary path. In stereo mode, OUT/AUX become L/R: the final MACRO mix is
-// replaced by a gentle equal-power pan of the two existing paths -- the voice
-// slightly left, the secondary formant path slightly right -- so the same
-// utterance widens across both channels. The model selection is unchanged.
+// Trimmed for flash from the original three-model engine: the naive formant
+// bank and the SAM clone are gone, and HARMONICS now maps the whole knob onto
+// the LPC synth (phoneme scanning, then the word banks). That removed the
+// region where two synths rendered at once, so it lowers the worst-case CPU
+// cost as well as the code size. See lpc_speech_synth_words.h for which word
+// banks were kept and why.
+//
+// OUT: the LPC voice, mixed with the secondary formant path by MACRO (voice
+// amount / spectral sharpening). AUX: the secondary path. In stereo mode,
+// OUT/AUX become L/R: the final MACRO mix is replaced by a gentle equal-power
+// pan of the two existing paths -- the voice slightly left, the secondary
+// formant path slightly right -- so the same utterance widens across both
+// channels.
 
 #ifndef PLAITS_DSP_ENGINE_SPEECH_ENGINE_H_
 #define PLAITS_DSP_ENGINE_SPEECH_ENGINE_H_
@@ -40,8 +47,6 @@
 
 #include "plaits/dsp/engine/engine.h"
 #include "plaits/dsp/speech/lpc_speech_synth_controller.h"
-#include "plaits/dsp/speech/naive_speech_synth.h"
-#include "plaits/dsp/speech/sam_speech_synth.h"
 
 namespace plaits {
 
@@ -70,14 +75,10 @@ class SpeechEngine : public Engine {
 
  private:
   stmlib::HysteresisQuantizer2 word_bank_quantizer_;
-  
-  NaiveSpeechSynth naive_speech_synth_;
-  SAMSpeechSynth sam_speech_synth_;
-  
+
   LPCSpeechSynthController lpc_speech_synth_controller_;
   LPCSpeechSynthWordBank lpc_speech_synth_word_bank_;
-  
-  float* temp_buffer_[2];
+
   float prosody_amount_;
   float speed_;
   float post_filter_;

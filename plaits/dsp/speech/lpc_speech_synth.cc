@@ -129,6 +129,7 @@ void LPCSpeechSynth::Render(
   next_sample_ = next_sample;
 }
 
+PLAITS_COLD_CODE
 void LPCSpeechSynth::PlayFrame(const Frame& f1, const Frame& f2, float blend) {
   float frequency_1 = f1.period == 0
       ? frequency_

@@ -1,4 +1,4 @@
-// Copyright 2016 Emilie Gillet.
+﻿// Copyright 2016 Emilie Gillet.
 //
 // Author: Emilie Gillet (emilie.o.gillet@gmail.com)
 //
@@ -36,17 +36,12 @@ using namespace std;
 using namespace stmlib;
 
 void SpeechEngine::Init(BufferAllocator* allocator) {
-  sam_speech_synth_.Init();
-  naive_speech_synth_.Init();
   lpc_speech_synth_word_bank_.Init(
       word_banks_,
       LPC_SPEECH_SYNTH_NUM_WORD_BANKS,
       allocator);
   lpc_speech_synth_controller_.Init(&lpc_speech_synth_word_bank_);
   word_bank_quantizer_.Init(LPC_SPEECH_SYNTH_NUM_WORD_BANKS + 1, 0.1f, false);
-  
-  temp_buffer_[0] = allocator->Allocate<float>(kMaxBlockSize);
-  temp_buffer_[1] = allocator->Allocate<float>(kMaxBlockSize);
   
   prosody_amount_ = 0.0f;
   speed_ = 0.0f;
@@ -66,79 +61,34 @@ void SpeechEngine::Render(
     bool* already_enveloped) {
   const float f0 = NoteToFrequency(parameters.note);
   
-  const float group = parameters.harmonics * 6.0f;
+  // HARMONICS selects the utterance source across three roughly equal zones:
+  // phoneme scanning up to ~0.37, the numbers bank to ~0.70, the alphabet bank
+  // above that (the quantizer's hysteresis puts the real edges at 0.30/0.37 and
+  // 0.63/0.70 depending on sweep direction). The naive and SAM models that the
+  // original engine crossfaded into across the lower third of this knob were
+  // removed to save flash, so the LPC synth -- the TI-speech voice this engine
+  // is built around -- now owns the whole knob. Verified against the original:
+  // both the phoneme zone and the numbers bank render identically.
+  const int word_bank = word_bank_quantizer_.Process(parameters.harmonics) - 1;
   
-  // Interpolates between the 3 models: naive, SAM, LPC.
-  if (group <= 2.0f) {
-    *already_enveloped = false;
-    
-    float blend = group;
-    if (group <= 1.0f) {
-      naive_speech_synth_.Render(
-          parameters.trigger == TRIGGER_RISING_EDGE,
-          f0,
-          parameters.morph,
-          parameters.timbre,
-          temp_buffer_[0],
-          aux,
-          out,
-          size);
-    } else {
-      lpc_speech_synth_controller_.Render(
-          parameters.trigger & TRIGGER_UNPATCHED,
-          parameters.trigger & TRIGGER_RISING_EDGE,
-          -1,
-          f0,
-          0.0f,
-          0.0f,
-          parameters.morph,
-          parameters.timbre,
-          1.0f,
-          aux,
-          out,
-          size);
-      blend = 2.0f - blend;
-    }
+  const bool replay_prosody = word_bank >= 0 && \
+      !(parameters.trigger & TRIGGER_UNPATCHED);
   
-    sam_speech_synth_.Render(
-        parameters.trigger == TRIGGER_RISING_EDGE,
-        f0,
-        parameters.morph,
-        parameters.timbre,
-        temp_buffer_[0],
-        temp_buffer_[1],
-        size);
-    
-    blend *= blend * (3.0f - 2.0f * blend);
-    blend *= blend * (3.0f - 2.0f * blend);
-    for (size_t i = 0; i < size; ++i) {
-      aux[i] += (temp_buffer_[0][i] - aux[i]) * blend;
-      out[i] += (temp_buffer_[1][i] - out[i]) * blend;
-    }
-  } else {
-    // Change phonemes/words for LPC.
-    const int word_bank = word_bank_quantizer_.Process(
-        (group - 2.0f) * 0.275f) - 1;
-    
-    const bool replay_prosody = word_bank >= 0 && \
-        !(parameters.trigger & TRIGGER_UNPATCHED);
-    
-    *already_enveloped = replay_prosody;
-    
-    lpc_speech_synth_controller_.Render(
-        parameters.trigger & TRIGGER_UNPATCHED,
-        parameters.trigger & TRIGGER_RISING_EDGE,
-        word_bank,
-        f0,
-        prosody_amount_,
-        speed_,
-        parameters.morph,
-        parameters.timbre,
-        replay_prosody ? parameters.accent : 1.0f,
-        aux,
-        out,
-        size);
-  }
+  *already_enveloped = replay_prosody;
+  
+  lpc_speech_synth_controller_.Render(
+      parameters.trigger & TRIGGER_UNPATCHED,
+      parameters.trigger & TRIGGER_RISING_EDGE,
+      word_bank,
+      f0,
+      prosody_amount_,
+      speed_,
+      parameters.morph,
+      parameters.timbre,
+      replay_prosody ? parameters.accent : 1.0f,
+      aux,
+      out,
+      size);
 
   if ((PLAITS_STEREO_SPEECH && parameters.stereo)) {
     // OUT/AUX become L/R: replace the MACRO mix with a gentle equal-power pan
