@@ -1,0 +1,106 @@
+[
+  {
+    "id": "hero",
+    "name": "Depth up, both operators engaged",
+    "durationSeconds": 6,
+    "note": 48,
+    "triggerHz": 0,
+    "controls": {
+      "harmonics": [0.0, 1.0],
+      "timbre": [0.7, 0.7],
+      "morph": [0.5, 0.5],
+      "macro": [0.0, 1.0]
+    }
+  },
+  {
+    "id": "bypassed",
+    "name": "Reference: depth at zero, so sine and cosine only",
+    "durationSeconds": 3,
+    "note": 48,
+    "triggerHz": 0,
+    "controls": {
+      "harmonics": [0.0, 0.0],
+      "timbre": [1.0, 1.0],
+      "morph": [1.0, 1.0],
+      "macro": [0.0, 0.0]
+    }
+  },
+  {
+    "id": "sweep-depth",
+    "name": "Sweep HARMONICS: both bends fade in",
+    "durationSeconds": 8,
+    "note": 48,
+    "triggerHz": 0,
+    "controls": {
+      "harmonics": [0.0, 1.0],
+      "timbre": [0.8, 0.8],
+      "morph": [0.6, 0.6],
+      "macro": [0.5, 0.5]
+    }
+  },
+  {
+    "id": "sweep-bend",
+    "name": "Sweep TIMBRE on the sine path alone",
+    "durationSeconds": 8,
+    "note": 48,
+    "triggerHz": 0,
+    "controls": {
+      "harmonics": [1.0, 1.0],
+      "timbre": [0.0, 1.0],
+      "morph": [0.0, 0.0],
+      "macro": [0.0, 0.0]
+    }
+  },
+  {
+    "id": "sweep-plateau",
+    "name": "Sweep MORPH on the cosine path alone",
+    "durationSeconds": 8,
+    "note": 48,
+    "triggerHz": 0,
+    "controls": {
+      "harmonics": [1.0, 1.0],
+      "timbre": [0.0, 0.0],
+      "morph": [0.0, 1.0],
+      "macro": [1.0, 1.0]
+    }
+  },
+  {
+    "id": "sweep-blend",
+    "name": "Sweep MACRO: sine path across to cosine path",
+    "durationSeconds": 6,
+    "note": 48,
+    "triggerHz": 0,
+    "controls": {
+      "harmonics": [1.0, 1.0],
+      "timbre": [0.85, 0.85],
+      "morph": [0.7, 0.7],
+      "macro": [0.0, 1.0]
+    }
+  },
+  {
+    "id": "pitch-high",
+    "name": "High register: the depth taper against Nyquist",
+    "durationSeconds": 4,
+    "note": 96,
+    "triggerHz": 0,
+    "controls": {
+      "harmonics": [1.0, 1.0],
+      "timbre": [1.0, 1.0],
+      "morph": [0.8, 0.8],
+      "macro": [0.0, 1.0]
+    }
+  },
+  {
+    "id": "plucked",
+    "name": "Struck notes through the low-pass gate",
+    "durationSeconds": 6,
+    "note": 60,
+    "triggerHz": 3,
+    "controls": {
+      "harmonics": [0.3, 1.0],
+      "timbre": [0.9, 0.9],
+      "morph": [0.2, 0.6],
+      "macro": [0.3, 0.3]
+    }
+  }
+]

@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "sdk": "plaits-engine-cpp-v1",
+  "packageType": "community",
+  "id": "community/phase-oscillator",
+  "catalogId": "phase-oscillator",
+  "version": "0.1.0",
+  "name": "Phase Oscillator",
+  "author": "Eric Gao",
+  "origin": "Community",
+  "artwork": {
+    "color": "#C9683F"
+  },
+  "license": "MIT",
+  "description": "Casio CZ-style phase distortion. One phase ramp feeds a sine and a cosine reader, each with its own operator bending the ramp before it indexes the table. The waveform changes; the pitch does not.",
+  "family": "Phase distortion",
+  "tags": [
+    "community",
+    "phase distortion",
+    "cz",
+    "digital",
+    "classic"
+  ],
+  "controls": [
+    {
+      "id": "harmonics",
+      "label": "Depth",
+      "description": "How much of both bends is applied. Fully down bypasses them, leaving a plain sine and cosine."
+    },
+    {
+      "id": "timbre",
+      "label": "Bend",
+      "description": "Knee position on the sine path: the cycle's first part runs faster, the rest slower. The CZ saw."
+    },
+    {
+      "id": "morph",
+      "label": "Plateau",
+      "description": "Width of a flat hold mid-cycle on the cosine path, which levels the wave. The CZ pulse."
+    },
+    {
+      "id": "macro",
+      "label": "Blend",
+      "description": "Crossfades MAIN from the sine path to the cosine path."
+    }
+  ],
+  "outputs": {
+    "main": "Sine path crossfaded to cosine path by Blend",
+    "aux": "The two paths ring-modulated together"
+  },
+  "source": {
+    "root": "src",
+    "header": "phase-oscillator_engine.h",
+    "files": [
+      "phase-oscillator_engine.cc"
+    ],
+    "className": "PhaseOscillatorEngine"
+  },
+  "postProcessing": {
+    "alreadyEnveloped": false,
+    "outGain": 0.8,
+    "auxGain": 0.8
+  },
+  "scenarios": "tests/scenarios.json"
+}
