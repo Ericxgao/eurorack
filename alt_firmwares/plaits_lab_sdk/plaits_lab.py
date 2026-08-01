@@ -952,43 +952,80 @@ def compile_renderer(
         raise PackageError(f"host compilation failed\n{details}")
 
 
-def wasm_compiler_path() -> str | None:
-    return shutil.which("emcc")
+# The audition harness surface the AudioWorklet drives. Emscripten wants the
+# JS-side names, which carry a leading underscore; wasm-ld wants the wasm export
+# names, which do not. Same nine functions either way.
+WASM_EXPORT_NAMES = ("init", "render", "set_params", "trigger", "set_env_mode",
+                     "set_stereo", "stereo_capable", "main_out", "aux_out")
+WASM_EXPORTS = "[" + ",".join(f'"_{n}"' for n in WASM_EXPORT_NAMES) + "]"
 
 
-# Emscripten exports the audition harness surface the AudioWorklet drives.
-WASM_EXPORTS = ('["_init","_render","_set_params","_trigger","_set_env_mode",'
-               '"_set_stereo","_stereo_capable","_main_out","_aux_out"]')
+def wasm_compiler_path() -> tuple[str, str] | None:
+    """The compiler to build live audition with, as (kind, path).
+
+    Emscripten first, since that is what the SDK targets. Failing that, any
+    clang new enough to have a wasm32 backend can do the job: the worklet loads
+    a STANDALONE_WASM module with no imports and no JS glue, which is a plain
+    freestanding link, not something only Emscripten can produce. That fallback
+    is worth having because emsdk is about 1.5 GB and clang is already present
+    on any machine that can run `check --full`.
+    """
+    emcc = shutil.which("emcc")
+    if emcc:
+        return ("emcc", emcc)
+    clang = shutil.which("clang++") or (
+        r"C:\Program Files\LLVM\bin\clang++.exe" if os.name == "nt" else None)
+    if clang and Path(clang).is_file() and clang_targets_wasm(clang):
+        return ("clang", clang)
+    return None
+
+
+def clang_targets_wasm(clang: str) -> bool:
+    result = subprocess.run([clang, "--print-targets"], text=True,
+                            capture_output=True, check=False)
+    return result.returncode == 0 and "wasm32" in result.stdout
 
 
 def compile_wasm(package: dict[str, Any], output: Path) -> None:
     """Compile the package to a standalone .wasm for the browser live-audition
     AudioWorklet — same sources as the native renderer, but the STATEFUL
-    wasm_audition.cc harness. Requires emscripten (emcc) on PATH; live audition
-    is simply unavailable when it is not."""
-    emcc = wasm_compiler_path()
-    if emcc is None:
-        raise PackageError("emscripten (emcc) not on PATH; run `source <emsdk>/emsdk_env.sh`")
+    wasm_audition.cc harness."""
+    compiler = wasm_compiler_path()
+    if compiler is None:
+        raise PackageError(
+            "no wasm compiler: emscripten (emcc) not on PATH and no clang with "
+            "a wasm32 backend either. Either is enough for live audition.")
+    kind, path = compiler
     manifest = package["manifest"]
     compiled = engine_translation_units(package, Path(__file__).with_name("wasm_audition.cc"))
-    command = [
-        emcc,
+    common = [
         "-std=c++11", MATH_CONSTANTS_DEFINE, "-DTEST", "-O2",
         f'-DPLAITS_LAB_ENGINE_HEADER="{engine_header_define(package)}"',
         f'-DPLAITS_LAB_ENGINE_CLASS=plaits::{manifest["source"]["className"]}',
         f'-DPLAITS_LAB_USER_DATA_BANK={package.get("user_data_bank", -1)}',
         "-I", str(package["repo_root"]),
         "-I", str(package["source_root"]),
-        *compiled,
-        "-sSTANDALONE_WASM=1",
-        f"-sEXPORTED_FUNCTIONS={WASM_EXPORTS}",
-        "--no-entry",
-        "-o", str(output),
     ]
+    if kind == "emcc":
+        command = [path, *common, *compiled,
+                   "-sSTANDALONE_WASM=1", f"-sEXPORTED_FUNCTIONS={WASM_EXPORTS}",
+                   "--no-entry", "-o", str(output)]
+    else:
+        # Freestanding wasm32. -nostdlib because there is no wasm libc here and
+        # the engine needs none; wasm_sysroot/ supplies the handful of C++
+        # wrapper headers clang does not ship for a bare target.
+        sysroot = Path(__file__).with_name("wasm_sysroot")
+        command = [
+            path, "--target=wasm32-unknown-unknown", *common,
+            "-nostdlib", "-fno-exceptions", "-fno-rtti",
+            "-isystem", str(sysroot), *compiled,
+            *[f"-Wl,--export={name}" for name in WASM_EXPORT_NAMES],
+            "-Wl,--no-entry", "-Wl,--export-memory", "-o", str(output),
+        ]
     result = subprocess.run(command, text=True, capture_output=True, check=False)
     if result.returncode:
         details = (result.stderr or result.stdout).strip()
-        raise PackageError(f"wasm compilation failed\n{details}")
+        raise PackageError(f"wasm compilation failed ({kind})\n{details}")
 
 
 def slug_to_class(slug: str) -> str:

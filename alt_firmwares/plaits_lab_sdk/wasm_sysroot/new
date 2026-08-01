@@ -1,0 +1,8 @@
+#pragma once
+#include <stddef.h>
+// Placement new only. The audition harness constructs the engine into a static
+// buffer; the source policy rejects real allocation before a package compiles.
+inline void* operator new(size_t, void* p) noexcept { return p; }
+inline void* operator new[](size_t, void* p) noexcept { return p; }
+inline void operator delete(void*, void*) noexcept { }
+inline void operator delete[](void*, void*) noexcept { }

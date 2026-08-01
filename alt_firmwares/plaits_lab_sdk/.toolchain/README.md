@@ -79,8 +79,16 @@ shadows the Windows `python` with one that has no numpy, which breaks
 | Missing | Needed for | Notes |
 | --- | --- | --- |
 | `qemu-system-arm` | `qemu/estimate.py --sweep`, the calibrated CPU estimate | the only real pre-flight CPU number |
-| `emcc` | live AudioWorklet audition in `dev` | `dev` falls back to render-and-listen, which works |
 | ARM GCC **4.8.3** | `build --hardware`, real firmware | the Daisy 10.2.1 on PATH is the wrong version |
+
+**Live audition needs no Emscripten here.** The SDK's README says `dev` needs
+`emcc` for the real-time AudioWorklet, and falls back to render-and-listen
+without it. That was true of the upstream CLI; this fork also accepts any clang
+with a wasm32 backend, which the LLVM install already has. The worklet loads a
+`STANDALONE_WASM` module with no imports and no JS glue, so building it is a
+plain freestanding link rather than something only Emscripten can do — see
+`compile_wasm` and `wasm_sysroot/`. Verified bit-identical to the native
+renderer: spectral correlation 1.000000.
 
 `check --full` also skips its own CPU smoke test here: the SDK's `cpu_bench.cc`
 is built `-std=c++11` and the MSVC STL's `<ratio>` uses C++14 digit separators.
