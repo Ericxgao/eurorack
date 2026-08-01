@@ -1,0 +1,106 @@
+[
+  {
+    "id": "hero",
+    "name": "Everything moving",
+    "durationSeconds": 6,
+    "note": 48,
+    "triggerHz": 0,
+    "controls": {
+      "harmonics": [0.0, 1.0],
+      "timbre": [0.0, 0.6],
+      "morph": [0.0, 0.7],
+      "macro": [0.0, 0.5]
+    }
+  },
+  {
+    "id": "reference-sine",
+    "name": "Reference: bare fundamental, nothing moving",
+    "durationSeconds": 3,
+    "note": 48,
+    "triggerHz": 0,
+    "controls": {
+      "harmonics": [0.0, 0.0],
+      "timbre": [0.0, 0.0],
+      "morph": [0.0, 0.0],
+      "macro": [0.0, 0.0]
+    }
+  },
+  {
+    "id": "sweep-partials",
+    "name": "Sweep HARMONICS: partials 2, 3, 4 fade in",
+    "durationSeconds": 8,
+    "note": 48,
+    "triggerHz": 0,
+    "controls": {
+      "harmonics": [0.0, 1.0],
+      "timbre": [0.0, 0.0],
+      "morph": [0.0, 0.0],
+      "macro": [0.0, 0.0]
+    }
+  },
+  {
+    "id": "sweep-drive",
+    "name": "Sweep TIMBRE: sine to saw-like buzz",
+    "durationSeconds": 8,
+    "note": 48,
+    "triggerHz": 0,
+    "controls": {
+      "harmonics": [0.0, 0.0],
+      "timbre": [0.0, 1.0],
+      "morph": [0.0, 0.0],
+      "macro": [0.0, 0.0]
+    }
+  },
+  {
+    "id": "sweep-stretch",
+    "name": "Sweep MORPH: harmonic stack to bell (all partials up)",
+    "durationSeconds": 8,
+    "note": 48,
+    "triggerHz": 0,
+    "controls": {
+      "harmonics": [1.0, 1.0],
+      "timbre": [0.0, 0.0],
+      "morph": [0.0, 1.0],
+      "macro": [0.0, 0.0]
+    }
+  },
+  {
+    "id": "sweep-sub",
+    "name": "Sweep MACRO: sub-octave mixes in",
+    "durationSeconds": 8,
+    "note": 60,
+    "triggerHz": 0,
+    "controls": {
+      "harmonics": [0.0, 0.0],
+      "timbre": [0.0, 0.0],
+      "morph": [0.0, 0.0],
+      "macro": [0.0, 1.0]
+    }
+  },
+  {
+    "id": "pitch-high",
+    "name": "High register: Nyquist guard mutes the upper partials",
+    "durationSeconds": 4,
+    "note": 108,
+    "triggerHz": 0,
+    "controls": {
+      "harmonics": [1.0, 1.0],
+      "timbre": [0.5, 0.5],
+      "morph": [0.0, 1.0],
+      "macro": [0.0, 0.0]
+    }
+  },
+  {
+    "id": "plucked",
+    "name": "Struck notes through the low-pass gate",
+    "durationSeconds": 6,
+    "note": 60,
+    "triggerHz": 3,
+    "controls": {
+      "harmonics": [0.0, 1.0],
+      "timbre": [0.0, 0.8],
+      "morph": [0.0, 0.4],
+      "macro": [0.3, 0.3]
+    }
+  }
+]

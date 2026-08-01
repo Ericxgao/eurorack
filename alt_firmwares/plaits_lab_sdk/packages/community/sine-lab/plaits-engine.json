@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "sdk": "plaits-engine-cpp-v1",
+  "packageType": "community",
+  "id": "community/sine-lab",
+  "catalogId": "sine-lab",
+  "version": "0.1.0",
+  "name": "Sine Lab",
+  "author": "Eric Gao",
+  "origin": "Community",
+  "artwork": {
+    "color": "#4FA3D1"
+  },
+  "license": "MIT",
+  "description": "A sine oscillator test bench. Each control moves exactly one audible dimension, so a single-control sweep isolates one thing, and AUX carries the unmodified fundamental as an A/B reference.",
+  "family": "Experimental",
+  "tags": [
+    "community",
+    "experimental",
+    "sine",
+    "additive",
+    "test bench"
+  ],
+  "controls": [
+    {
+      "id": "harmonics",
+      "label": "Partials",
+      "description": "Fades partials 2, 3, and 4 in one at a time. Fully down is a bare sine."
+    },
+    {
+      "id": "timbre",
+      "label": "Drive",
+      "description": "Phase-modulates the fundamental with itself, from a pure sine up to a saw-like buzz."
+    },
+    {
+      "id": "morph",
+      "label": "Stretch",
+      "description": "Detunes the upper partials off the harmonic series, from organ-like to bell-like."
+    },
+    {
+      "id": "macro",
+      "label": "Sub",
+      "description": "Mixes in a sine one octave below the fundamental."
+    }
+  ],
+  "outputs": {
+    "main": "The full partial stack, phase modulation and sub included",
+    "aux": "The unmodified fundamental sine, as an A/B reference"
+  },
+  "source": {
+    "root": "src",
+    "header": "sine-lab_engine.h",
+    "files": [
+      "sine-lab_engine.cc"
+    ],
+    "className": "SineLabEngine"
+  },
+  "postProcessing": {
+    "alreadyEnveloped": false,
+    "outGain": 0.8,
+    "auxGain": 0.8
+  },
+  "scenarios": "tests/scenarios.json"
+}
