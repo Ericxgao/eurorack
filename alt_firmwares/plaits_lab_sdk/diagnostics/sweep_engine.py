@@ -96,12 +96,16 @@ def build_renderer(package_dir: Path, compiler: str, out: Path) -> None:
 
 
 def render(renderer: Path, note: float, values: dict[str, float],
-           seconds: int = 2) -> tuple[np.ndarray, np.ndarray, int]:
+           gains: tuple[float, float], seconds: int = 2,
+           ) -> tuple[np.ndarray, np.ndarray, int]:
     out = Path(tempfile.mktemp(suffix=".wav"))
     args = [str(renderer), str(out), str(seconds), str(note)]
     for control in CONTROLS:
         args += [str(values[control]), str(values[control])]
-    args += ["0", "1.0", "1.0"]
+    # The manifest's own output gains, NOT unity. Forcing 1.0 here clipped the
+    # renderer on any engine that uses its headroom, and clipping is broadband:
+    # it showed up as an aliasing reading of -33 dB on an engine measuring -100.
+    args += ["0", str(gains[0]), str(gains[1])]
     subprocess.run(args, check=True, capture_output=True)
     with wave.open(str(out)) as w:
         frames, channels, rate = w.getnframes(), w.getnchannels(), w.getframerate()
@@ -128,6 +132,8 @@ def measure(signal: np.ndarray, rate: int, f0: float) -> dict[str, float]:
     return {
         "centroid": float((spectrum * freqs).sum() / max(spectrum.sum(), 1e-30)),
         "rms": float(np.sqrt(np.mean(window ** 2))),
+        "dc": float(np.mean(window)),
+        "peak": float(np.abs(window).max()),
         "inharmonic_db": -99.0 if stray <= 0 else float(10 * math.log10(stray)),
     }
 
@@ -137,13 +143,21 @@ def note_to_hz(note: float) -> float:
 
 
 def print_row(label: str, m: dict[str, float]) -> None:
-    flag = ""
+    flags = []
+    # Clipping first: it is broadband, so it inflates the aliasing figure and
+    # would otherwise be misread as the engine folding content down.
+    if m["peak"] >= 0.999:
+        flags.append("CLIPPING")
     if m["inharmonic_db"] > -30.0:
-        flag = "  <-- ALIASING"
+        flags.append("ALIASING")
     elif m["inharmonic_db"] > -60.0:
-        flag = "  <-- some fold-back"
-    print(f"  {label:>14s}   centroid {m['centroid']:8.0f} Hz   "
-          f"rms {m['rms']:.4f}   inharmonic {m['inharmonic_db']:6.1f} dB{flag}")
+        flags.append("some fold-back")
+    if abs(m["dc"]) > 0.2:
+        flags.append("DC over SDK limit")
+    suffix = "  <-- " + ", ".join(flags) if flags else ""
+    print(f"  {label:>14s}   centroid {m['centroid']:8.0f} Hz   rms {m['rms']:.4f}   "
+          f"peak {m['peak']:.3f}   dc {m['dc']:+.3f}   "
+          f"inharmonic {m['inharmonic_db']:6.1f} dB{suffix}")
 
 
 def main() -> int:
@@ -175,23 +189,28 @@ def main() -> int:
             parser.error(f"--hold: unknown control {name!r}")
         held[name] = float(value)
 
+    post = json.loads((args.package / "plaits-engine.json").read_text()
+                      ).get("postProcessing", {})
+    gains = (float(post.get("outGain", 0.8)), float(post.get("auxGain", 0.8)))
+
     with tempfile.TemporaryDirectory() as work:
         renderer = Path(work) / ("render.exe" if os.name == "nt" else "render")
         build_renderer(args.package, args.compiler, renderer)
 
         if args.sweep_pitch:
-            print(f"pitch sweep, controls {held}")
+            print(f"pitch sweep, controls {held}, gains {gains}")
             for note in np.linspace(24, 120, args.steps):
-                main_ch, _, rate = render(renderer, note, held, args.seconds)
+                main_ch, _, rate = render(renderer, note, held, gains, args.seconds)
                 m = measure(main_ch, rate, note_to_hz(note))
                 print_row(f"note {note:5.1f}", m)
         else:
             print(f"{args.control} sweep at note {args.note} "
-                  f"({note_to_hz(args.note):.1f} Hz), others {held}")
+                  f"({note_to_hz(args.note):.1f} Hz), others {held}, gains {gains}")
             f0 = note_to_hz(args.note)
             for value in np.linspace(0.0, 1.0, args.steps):
                 values = dict(held, **{args.control: float(value)})
-                main_ch, _, rate = render(renderer, args.note, values, args.seconds)
+                main_ch, _, rate = render(
+                    renderer, args.note, values, gains, args.seconds)
                 print_row(f"{args.control[:4]}={value:.2f}", measure(main_ch, rate, f0))
     return 0
 
