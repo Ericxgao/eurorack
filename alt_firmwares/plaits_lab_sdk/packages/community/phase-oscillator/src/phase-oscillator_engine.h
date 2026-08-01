@@ -8,21 +8,25 @@
 
 namespace plaits {
 
-// Casio CZ-style phase distortion. One linear phase ramp feeds two readers, a
-// sine and a cosine, and each reader gets its own operator bending the ramp
-// before it is used as a table index. The waveform changes while the pitch does
-// not, because nothing here alters how fast the ramp runs.
+// Casio CZ-style phase distortion, built as a chain rather than a single bend.
+// A linear phase ramp passes through two operators in SERIES before it is used
+// as a table index, and each operator is chosen from a bank by crossfading
+// between neighbours, so the knob runs continuously through the bank instead of
+// stepping. Composition is not commutative, which is the point: chaining a
+// shape into a drive reaches waveforms neither reaches alone.
 //
-//   TIMBRE     bends the SINE path's ramp: a knee that runs the first part of
-//              the cycle fast and the rest slow. The CZ "saw" bend.
-//   MORPH      bends the COSINE path's ramp: a plateau held mid-cycle, which
-//              holds the reader still and flattens the wave. The CZ "pulse".
-//   HARMONICS  depth for both — how much of each bend is actually applied.
-//              At zero the operators are bypassed and this is a sine and a
-//              cosine, whatever TIMBRE and MORPH say.
-//   MACRO      crossfades MAIN from the sine path to the cosine path.
+//   TIMBRE     scans the SHAPE bank   — identity, saw knee, pulse plateau, fold
+//   HARMONICS  scans the DRIVE bank   — identity, square, warp, double warp
+//   MORPH      depth of the whole chain. At zero the ramp passes through
+//              untouched and this is a sine, whatever the other two say.
+//   MACRO      blends MAIN from the fundamental reader to the doubled one.
 //
-//   AUX        the two paths ring-modulated together.
+//   AUX        the doubled reader alone, an octave up on the same waveform.
+//
+// The two readers are a quadrature pair, sin and cos of the warped phase. Note
+// that blending those directly would be inaudible — same magnitude spectrum,
+// only a phase rotation — so the pair is used as a product instead:
+// 2*sin*cos is sin of twice the warped phase, which is a different spectrum.
 class PhaseOscillatorEngine : public Engine {
  public:
   PhaseOscillatorEngine() { }
@@ -61,10 +65,8 @@ class PhaseOscillatorEngine : public Engine {
 
   float phase_;
 
-  // Both operators are asymmetric in time, so both leave a large DC offset —
-  // measured at -0.58 on MAIN and +0.45 on AUX without this, against an SDK
-  // limit of 0.2. Not a corner case either: the sine path on its own sits at
-  // -0.39 with the knee fully bent.
+  // Several operators are asymmetric in time and leave a large offset — over
+  // half of full scale at the worst point, against an SDK limit of 0.2.
   DCBlocker dc_blocker_out_;
   DCBlocker dc_blocker_aux_;
 

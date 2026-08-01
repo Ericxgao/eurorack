@@ -1,80 +1,177 @@
 [
   {
     "id": "hero",
-    "name": "Depth up, both operators engaged",
+    "name": "The whole chain opening up",
     "durationSeconds": 6,
     "note": 48,
     "triggerHz": 0,
     "controls": {
-      "harmonics": [0.0, 1.0],
-      "timbre": [0.7, 0.7],
-      "morph": [0.5, 0.5],
-      "macro": [0.0, 1.0]
+      "harmonics": [
+        0.0,
+        0.8
+      ],
+      "timbre": [
+        0.0,
+        0.9
+      ],
+      "morph": [
+        0.0,
+        1.0
+      ],
+      "macro": [
+        0.0,
+        0.4
+      ]
     }
   },
   {
     "id": "bypassed",
-    "name": "Reference: depth at zero, so sine and cosine only",
+    "name": "Reference: depth at zero, so a plain sine",
     "durationSeconds": 3,
     "note": 48,
     "triggerHz": 0,
     "controls": {
-      "harmonics": [0.0, 0.0],
-      "timbre": [1.0, 1.0],
-      "morph": [1.0, 1.0],
-      "macro": [0.0, 0.0]
+      "harmonics": [
+        1.0,
+        1.0
+      ],
+      "timbre": [
+        1.0,
+        1.0
+      ],
+      "morph": [
+        0.0,
+        0.0
+      ],
+      "macro": [
+        0.0,
+        0.0
+      ]
+    }
+  },
+  {
+    "id": "shape-bank",
+    "name": "Scan the SHAPE bank: identity -> knee -> pulse -> fold",
+    "durationSeconds": 9,
+    "note": 48,
+    "triggerHz": 0,
+    "controls": {
+      "harmonics": [
+        0.0,
+        0.0
+      ],
+      "timbre": [
+        0.0,
+        1.0
+      ],
+      "morph": [
+        1.0,
+        1.0
+      ],
+      "macro": [
+        0.0,
+        0.0
+      ]
+    }
+  },
+  {
+    "id": "drive-bank",
+    "name": "Scan the DRIVE bank: identity -> square -> warp -> double",
+    "durationSeconds": 9,
+    "note": 48,
+    "triggerHz": 0,
+    "controls": {
+      "harmonics": [
+        0.0,
+        1.0
+      ],
+      "timbre": [
+        0.0,
+        0.0
+      ],
+      "morph": [
+        1.0,
+        1.0
+      ],
+      "macro": [
+        0.0,
+        0.0
+      ]
+    }
+  },
+  {
+    "id": "chained",
+    "name": "Both banks scanning at once, in series",
+    "durationSeconds": 9,
+    "note": 48,
+    "triggerHz": 0,
+    "controls": {
+      "harmonics": [
+        0.0,
+        1.0
+      ],
+      "timbre": [
+        0.0,
+        1.0
+      ],
+      "morph": [
+        1.0,
+        1.0
+      ],
+      "macro": [
+        0.0,
+        0.0
+      ]
     }
   },
   {
     "id": "sweep-depth",
-    "name": "Sweep HARMONICS: both bends fade in",
+    "name": "Sweep MORPH: the chain fades in",
     "durationSeconds": 8,
     "note": 48,
     "triggerHz": 0,
     "controls": {
-      "harmonics": [0.0, 1.0],
-      "timbre": [0.8, 0.8],
-      "morph": [0.6, 0.6],
-      "macro": [0.5, 0.5]
+      "harmonics": [
+        0.6,
+        0.6
+      ],
+      "timbre": [
+        0.4,
+        0.4
+      ],
+      "morph": [
+        0.0,
+        1.0
+      ],
+      "macro": [
+        0.0,
+        0.0
+      ]
     }
   },
   {
-    "id": "sweep-bend",
-    "name": "Sweep TIMBRE on the sine path alone",
-    "durationSeconds": 8,
-    "note": 48,
-    "triggerHz": 0,
-    "controls": {
-      "harmonics": [1.0, 1.0],
-      "timbre": [0.0, 1.0],
-      "morph": [0.0, 0.0],
-      "macro": [0.0, 0.0]
-    }
-  },
-  {
-    "id": "sweep-plateau",
-    "name": "Sweep MORPH on the cosine path alone",
-    "durationSeconds": 8,
-    "note": 48,
-    "triggerHz": 0,
-    "controls": {
-      "harmonics": [1.0, 1.0],
-      "timbre": [0.0, 0.0],
-      "morph": [0.0, 1.0],
-      "macro": [1.0, 1.0]
-    }
-  },
-  {
-    "id": "sweep-blend",
-    "name": "Sweep MACRO: sine path across to cosine path",
+    "id": "sweep-octave",
+    "name": "Sweep MACRO: fundamental up to the doubled reader",
     "durationSeconds": 6,
     "note": 48,
     "triggerHz": 0,
     "controls": {
-      "harmonics": [1.0, 1.0],
-      "timbre": [0.85, 0.85],
-      "morph": [0.7, 0.7],
-      "macro": [0.0, 1.0]
+      "harmonics": [
+        0.5,
+        0.5
+      ],
+      "timbre": [
+        0.35,
+        0.35
+      ],
+      "morph": [
+        1.0,
+        1.0
+      ],
+      "macro": [
+        0.0,
+        1.0
+      ]
     }
   },
   {
@@ -84,10 +181,22 @@
     "note": 96,
     "triggerHz": 0,
     "controls": {
-      "harmonics": [1.0, 1.0],
-      "timbre": [1.0, 1.0],
-      "morph": [0.8, 0.8],
-      "macro": [0.0, 1.0]
+      "harmonics": [
+        0.5,
+        0.5
+      ],
+      "timbre": [
+        0.5,
+        0.5
+      ],
+      "morph": [
+        1.0,
+        1.0
+      ],
+      "macro": [
+        0.0,
+        0.0
+      ]
     }
   },
   {
@@ -97,10 +206,22 @@
     "note": 60,
     "triggerHz": 3,
     "controls": {
-      "harmonics": [0.3, 1.0],
-      "timbre": [0.9, 0.9],
-      "morph": [0.2, 0.6],
-      "macro": [0.3, 0.3]
+      "harmonics": [
+        0.2,
+        0.8
+      ],
+      "timbre": [
+        0.3,
+        0.7
+      ],
+      "morph": [
+        0.4,
+        1.0
+      ],
+      "macro": [
+        0.2,
+        0.2
+      ]
     }
   }
 ]

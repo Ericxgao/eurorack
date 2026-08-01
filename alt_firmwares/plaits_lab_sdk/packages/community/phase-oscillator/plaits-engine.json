@@ -4,7 +4,7 @@
   "packageType": "community",
   "id": "community/phase-oscillator",
   "catalogId": "phase-oscillator",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "name": "Phase Oscillator",
   "author": "Eric Gao",
   "origin": "Community",
@@ -12,7 +12,7 @@
     "color": "#C9683F"
   },
   "license": "MIT",
-  "description": "Casio CZ-style phase distortion. One phase ramp feeds a sine and a cosine reader, each with its own operator bending the ramp before it indexes the table. The waveform changes; the pitch does not.",
+  "description": "Casio CZ-style phase distortion built as a chain: the phase ramp passes through two operators in series, each crossfaded continuously across a bank of four. Composition is not commutative, which is the point.",
   "family": "Phase distortion",
   "tags": [
     "community",
@@ -24,28 +24,28 @@
   "controls": [
     {
       "id": "harmonics",
-      "label": "Depth",
-      "description": "How much of both bends is applied. Fully down bypasses them, leaving a plain sine and cosine."
+      "label": "Drive",
+      "description": "Scans the second operator bank: identity, square, warp, double warp. Smooth curves, applied after the shape."
     },
     {
       "id": "timbre",
-      "label": "Bend",
-      "description": "Knee position on the sine path: the cycle's first part runs faster, the rest slower. The CZ saw."
+      "label": "Shape",
+      "description": "Scans the first operator bank: identity, saw knee, pulse plateau, fold. Corners, and the CZ character."
     },
     {
       "id": "morph",
-      "label": "Plateau",
-      "description": "Width of a flat hold mid-cycle on the cosine path, which levels the wave. The CZ pulse."
+      "label": "Depth",
+      "description": "Depth of the whole chain. Fully down passes the ramp through untouched, leaving a plain sine."
     },
     {
       "id": "macro",
-      "label": "Blend",
-      "description": "Crossfades MAIN from the sine path to the cosine path."
+      "label": "Octave",
+      "description": "Blends MAIN from the fundamental reader up to the doubled one, an octave above on the same waveform."
     }
   ],
   "outputs": {
-    "main": "Sine path crossfaded to cosine path by Blend",
-    "aux": "The two paths ring-modulated together"
+    "main": "Fundamental reader blended toward the doubled reader by Octave",
+    "aux": "The doubled reader alone, an octave up on the same waveform"
   },
   "source": {
     "root": "src",
