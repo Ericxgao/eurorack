@@ -4,7 +4,7 @@
   "packageType": "community",
   "id": "community/phase-oscillator",
   "catalogId": "phase-oscillator",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "name": "Phase Oscillator",
   "author": "Eric Gao",
   "origin": "Community",
@@ -12,40 +12,41 @@
     "color": "#C9683F"
   },
   "license": "MIT",
-  "description": "Casio CZ-style phase distortion built as a chain: the phase ramp passes through two operators in series, each crossfaded continuously across a bank of four. Composition is not commutative, which is the point.",
+  "description": "Casio CZ phase distortion: a drive curve then a shape, in series, each crossfaded across a bank. The shape bank is the CZ waveform set including all three resonant windows, which run a formant over a falling envelope.",
   "family": "Phase distortion",
   "tags": [
     "community",
     "phase distortion",
     "cz",
-    "digital",
+    "resonant",
+    "formant",
     "classic"
   ],
   "controls": [
     {
       "id": "harmonics",
       "label": "Drive",
-      "description": "Scans the second operator bank: identity, square, warp, double warp. Smooth curves, applied after the shape."
+      "description": "Scans the drive bank: square, warp, double warp, triple warp. Smooth curves on the ramp, applied first."
     },
     {
       "id": "timbre",
       "label": "Shape",
-      "description": "Scans the first operator bank: identity, saw knee, pulse plateau, fold. Corners, and the CZ character."
+      "description": "Scans the CZ waveform set: saw, pulse, double sine, then the resonant saw, triangle and trapezoid windows."
     },
     {
       "id": "morph",
       "label": "Depth",
-      "description": "Depth of the whole chain. Fully down passes the ramp through untouched, leaving a plain sine."
+      "description": "Depth of the whole chain, and the only bypass. Fully down is a plain sine whatever the banks are set to."
     },
     {
       "id": "macro",
-      "label": "Octave",
-      "description": "Blends MAIN from the fundamental reader up to the doubled one, an octave above on the same waveform."
+      "label": "Formant",
+      "description": "Ratio of the formant to the fundamental, for the three resonant shapes only. Neutral at centre; ignore it otherwise."
     }
   ],
   "outputs": {
-    "main": "Fundamental reader blended toward the doubled reader by Octave",
-    "aux": "The doubled reader alone, an octave up on the same waveform"
+    "main": "The chain output",
+    "aux": "The same read an octave up, under the same window"
   },
   "source": {
     "root": "src",

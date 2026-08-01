@@ -1,26 +1,26 @@
 [
   {
     "id": "hero",
-    "name": "The whole chain opening up",
-    "durationSeconds": 6,
+    "name": "The chain opening up across both banks",
+    "durationSeconds": 8,
     "note": 48,
     "triggerHz": 0,
     "controls": {
       "harmonics": [
         0.0,
-        0.8
+        0.7
       ],
       "timbre": [
         0.0,
-        0.9
+        1.0
       ],
       "morph": [
         0.0,
         1.0
       ],
       "macro": [
-        0.0,
-        0.4
+        0.5,
+        0.5
       ]
     }
   },
@@ -44,15 +44,15 @@
         0.0
       ],
       "macro": [
-        0.0,
-        0.0
+        0.5,
+        0.5
       ]
     }
   },
   {
     "id": "shape-bank",
-    "name": "Scan the SHAPE bank: identity -> knee -> pulse -> fold",
-    "durationSeconds": 9,
+    "name": "Scan the CZ set: saw, pulse, double sine, then the three resonants",
+    "durationSeconds": 12,
     "note": 48,
     "triggerHz": 0,
     "controls": {
@@ -69,14 +69,14 @@
         1.0
       ],
       "macro": [
-        0.0,
-        0.0
+        0.5,
+        0.5
       ]
     }
   },
   {
     "id": "drive-bank",
-    "name": "Scan the DRIVE bank: identity -> square -> warp -> double",
+    "name": "Scan the drive bank alone",
     "durationSeconds": 9,
     "note": 48,
     "triggerHz": 0,
@@ -94,75 +94,25 @@
         1.0
       ],
       "macro": [
-        0.0,
-        0.0
+        0.5,
+        0.5
       ]
     }
   },
   {
-    "id": "chained",
-    "name": "Both banks scanning at once, in series",
-    "durationSeconds": 9,
-    "note": 48,
-    "triggerHz": 0,
-    "controls": {
-      "harmonics": [
-        0.0,
-        1.0
-      ],
-      "timbre": [
-        0.0,
-        1.0
-      ],
-      "morph": [
-        1.0,
-        1.0
-      ],
-      "macro": [
-        0.0,
-        0.0
-      ]
-    }
-  },
-  {
-    "id": "sweep-depth",
-    "name": "Sweep MORPH: the chain fades in",
+    "id": "reso-sweep",
+    "name": "Resonant saw, formant ratio sweeping low to high",
     "durationSeconds": 8,
     "note": 48,
     "triggerHz": 0,
     "controls": {
       "harmonics": [
-        0.6,
-        0.6
-      ],
-      "timbre": [
-        0.4,
-        0.4
-      ],
-      "morph": [
-        0.0,
-        1.0
-      ],
-      "macro": [
         0.0,
         0.0
-      ]
-    }
-  },
-  {
-    "id": "sweep-octave",
-    "name": "Sweep MACRO: fundamental up to the doubled reader",
-    "durationSeconds": 6,
-    "note": 48,
-    "triggerHz": 0,
-    "controls": {
-      "harmonics": [
-        0.5,
-        0.5
       ],
       "timbre": [
-        0.35,
-        0.35
+        0.6,
+        0.6
       ],
       "morph": [
         1.0,
@@ -171,31 +121,81 @@
       "macro": [
         0.0,
         1.0
+      ]
+    }
+  },
+  {
+    "id": "reso-windows",
+    "name": "The three resonant windows at a fixed formant",
+    "durationSeconds": 8,
+    "note": 48,
+    "triggerHz": 0,
+    "controls": {
+      "harmonics": [
+        0.0,
+        0.0
+      ],
+      "timbre": [
+        0.6,
+        1.0
+      ],
+      "morph": [
+        1.0,
+        1.0
+      ],
+      "macro": [
+        0.5,
+        0.5
+      ]
+    }
+  },
+  {
+    "id": "sweep-depth",
+    "name": "Sweep MORPH on a resonant shape: the formant rises out of the sine",
+    "durationSeconds": 8,
+    "note": 48,
+    "triggerHz": 0,
+    "controls": {
+      "harmonics": [
+        0.2,
+        0.2
+      ],
+      "timbre": [
+        0.7,
+        0.7
+      ],
+      "morph": [
+        0.0,
+        1.0
+      ],
+      "macro": [
+        0.5,
+        0.5
       ]
     }
   },
   {
     "id": "pitch-high",
-    "name": "High register: the depth taper against Nyquist",
+    "name": "High register: the depth taper and the formant cap",
     "durationSeconds": 4,
     "note": 96,
     "triggerHz": 0,
     "controls": {
       "harmonics": [
-        0.5,
-        0.5
+        0.3,
+        0.3
       ],
       "timbre": [
-        0.5,
-        0.5
+        0.7,
+        0.7
       ],
       "morph": [
         1.0,
         1.0
       ],
       "macro": [
-        0.0,
-        0.0
+        0.5,
+        0.5
       ]
     }
   },
@@ -208,19 +208,19 @@
     "controls": {
       "harmonics": [
         0.2,
-        0.8
+        0.7
       ],
       "timbre": [
-        0.3,
-        0.7
+        0.5,
+        0.9
       ],
       "morph": [
         0.4,
         1.0
       ],
       "macro": [
-        0.2,
-        0.2
+        0.5,
+        0.5
       ]
     }
   }

@@ -8,25 +8,31 @@
 
 namespace plaits {
 
-// Casio CZ-style phase distortion, built as a chain rather than a single bend.
-// A linear phase ramp passes through two operators in SERIES before it is used
-// as a table index, and each operator is chosen from a bank by crossfading
-// between neighbours, so the knob runs continuously through the bank instead of
-// stepping. Composition is not commutative, which is the point: chaining a
-// shape into a drive reaches waveforms neither reaches alone.
+// Casio CZ-style phase distortion, built as a chain. A linear ramp passes
+// through a drive operator and then a shape operator before it is read, and
+// each operator is picked from a bank by crossfading between neighbours, so a
+// knob runs continuously through its bank instead of stepping.
 //
-//   TIMBRE     scans the SHAPE bank   — identity, saw knee, pulse plateau, fold
-//   HARMONICS  scans the DRIVE bank   — identity, square, warp, double warp
-//   MORPH      depth of the whole chain. At zero the ramp passes through
-//              untouched and this is a sine, whatever the other two say.
-//   MACRO      blends MAIN from the fundamental reader to the doubled one.
+//   HARMONICS  DRIVE bank  — square, warp, double warp, triple warp.
+//              Smooth curves, applied to the ramp first.
+//   TIMBRE     SHAPE bank  — saw, pulse, double sine, and the three resonant
+//              windows. The CZ waveform set, applied second.
+//   MORPH      depth, for the whole chain. At zero both operators are bypassed
+//              and this is a sine, whatever the other two say.
 //
-//   AUX        the doubled reader alone, an octave up on the same waveform.
+// Neither bank has an identity entry: bypass is what MORPH is for, and an
+// identity operator would only duplicate it while stealing knob travel.
 //
-// The two readers are a quadrature pair, sin and cos of the warped phase. Note
-// that blending those directly would be inaudible — same magnitude spectrum,
-// only a phase rotation — so the pair is used as a product instead:
-// 2*sin*cos is sin of twice the warped phase, which is a different spectrum.
+// The three resonant shapes are not phase bends at all. They run the reader at
+// a multiple of the fundamental and apply a falling amplitude window over each
+// cycle — a sawtooth, triangle, or trapezoid — which is the CZ's resonant
+// filter sweep. So a shape operator returns a read position AND a window, and
+// the plain bends simply leave the window at one.
+//
+//   MACRO      formant ratio for those three, and nothing else. Neutral at
+//              centre through ApplyMacro, because the voice hands an engine
+//              0.5 whenever the frequency knob is not locked to this. The
+//              engine is complete on the three real knobs; this only refines.
 class PhaseOscillatorEngine : public Engine {
  public:
   PhaseOscillatorEngine() { }
@@ -65,8 +71,8 @@ class PhaseOscillatorEngine : public Engine {
 
   float phase_;
 
-  // Several operators are asymmetric in time and leave a large offset — over
-  // half of full scale at the worst point, against an SDK limit of 0.2.
+  // Several operators are asymmetric in time and leave a large offset, and the
+  // windowed ones are one-sided by construction.
   DCBlocker dc_blocker_out_;
   DCBlocker dc_blocker_aux_;
 
